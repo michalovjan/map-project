@@ -195,8 +195,8 @@ var overlay = new ol.Overlay({
 var map = new ol.Map({
     layers: [
         new olLayer.Tile({
-            source: new olSource.OSM({
-                "url" : "http://{a-c}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png"
+            source: new olSource.XYZ( {
+                url: 'https://api.mapbox.com/styles/v1/michalovj/ckawyq8og04ge1illu36zt5l8/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoibWljaGFsb3ZqIiwiYSI6ImNrYXNlczJ4cjA2a3YyeXB0b3J0NzZmMTcifQ.aI-5pcZa6maYFqGQ1n8y7w'
             })
         }),
         radonVectorLayer,
