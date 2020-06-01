@@ -12,48 +12,70 @@
 		<table>
 			<tr>
 				<th></th>
-				<th>Radon index</th>
+				<th><span style='font-size: 17px; cursor: help;' title='Radon index of 10 and above becomes a factor provided the building is located at permeable bedrock.'>&#x2754;</span>Radon index</th>
 				<th>Metro stations</th>
 				<th>Air quality</th>
-				<th>Noise levels</th>
+				<th>Noise levels at night</th>
 			</tr>
 			<tr>
 				<td></td>
 				<td><button type='button' class='visibilityButton hide' id='radonToggleButton'></button></td>
 				<td><button type='button' class='visibilityButton hide' id='metroToggleButton'></button></td>
 				<td><button type='button' class='visibilityButton hide' id='chmiToggleButton'></button></td>
-				<td><button type='button' class='visibilityButton downloadButton' id='FIRST'>Get data in range 0-19 db</button><div class='loader loader-small' id='FIRSTloader'></div></td>
+				<td><button type='button' class='visibilityButton downloadButton' id='FIRST' title='Downloads ca. 15MB'>
+						<span style='color: rgb(209, 23, 23); font-size: 18px; padding-right: 5px; position: relative;'>&#9888;</span>
+						Get data in range 0-19 db
+					</button>
+					<div class='loader loader-small' id='FIRSTloader'></div>
+				</td>
 			</tr>
 			<tr>
 				<td></td>
 				<td>
 					<input type="range" min="0" max="5" value="4" class="slider" id="rnIndexRange">
-					<div>
+					<div class='sliderInfoText'>
 						<span>Highlighting areas with radon index of at least <span id='radonIndexText'></span></span>
 					</div>
 				</td>
 				<td>
 					<input type="range" min="50" max="2000" value="500" class="slider" id="metroRange">
-					<div>
+					<div class='sliderInfoText'>
 						<span>Radius shown around the stations: <span id='metroRadiusText'></span>m</span>
 					</div>
 				</td>
 				<td></td>
-				<td><button type='button' class='visibilityButton downloadButton' id='SECOND'>Get data in range 20-39 db</button><div class='loader loader-small' id='SECONDloader'></div></td>
+				<td>
+					<button type='button' class='visibilityButton downloadButton' id='SECOND' title='Downloads ca. 45MB'>
+						<span style='color: rgb(209, 23, 23); font-size: 18px; padding-right: 5px; position: relative;'>&#9888;</span>
+						Get data in range 20-39 db
+					</button>
+					<div class='loader loader-small' id='SECONDloader'></div>
+				</td>
 			</tr>
 			<tr>
 				<td></td>
 				<td></td>
 				<td></td>
 				<td></td>
-				<td><button type='button' class='visibilityButton downloadButton' id='THIRD'>Get data in range 40-59 db</button><div class='loader loader-small' id='THIRDloader'></div></td>
+				<td><button type='button' class='visibilityButton downloadButton' id='THIRD' title='Downloads ca. 75MB'>
+						<span style='color: rgb(209, 23, 23); font-size: 18px; padding-right: 5px; position: relative;'>&#9888;</span>
+						Get data in range 40-59 db
+					</button>
+					<div class='loader loader-small' id='THIRDloader'></div>
+				</td>
 			</tr>
 			<tr>
 				<td></td>
 				<td></td>
 				<td></td>
 				<td></td>
-				<td><button type='button' class='visibilityButton downloadButton' id='FOURTH'>Get data in range 60-85 db</button><div class='loader loader-small' id='FOURTHloader'></div></td>
+				<td>
+					<button type='button' class='visibilityButton downloadButton' id='FOURTH' title='Downloads ca. 20MB'>
+						<span style='color: rgb(209, 23, 23); font-size: 18px; padding-right: 5px; position: relative;'>&#9888;</span>
+						Get data in range 60-85 db
+					</button>
+					<div class='loader loader-small' id='FOURTHloader'></div>
+				</td>
 			</tr>
 			<tr>
 				<td></td>

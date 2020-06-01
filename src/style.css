@@ -1,5 +1,6 @@
 html {
     background-color: #dedede;
+    font-family: Arial, Helvetica, sans-serif;
 }
 
 body {
@@ -147,4 +148,8 @@ table tr th:first-child {
 
 #noiseSlider {
     display: none;
+}
+
+.sliderInfoText {
+    margin-top: 15px;
 }

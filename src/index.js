@@ -13,16 +13,18 @@ import 'ol/ol.css';
 proj4.defs("EPSG:5514","+proj=krovak +lat_0=49.5 +lon_0=24.83333333333333 +alpha=30.28813972222222 +k=0.9999 +x_0=0 +y_0=0 +ellps=bessel +towgs84=589,76,480,0,0,0,0 +units=m +no_defs");
 register(proj4);
 
+var host = '192.168.0.45';
+var port = 8080;
 var notLoadedFeatures = 3;
 var golemioApiKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Iml2YW52YW5hdEBnbWFpbC5jb20iLCJpZCI6MjkyLCJuYW1lIjpudWxsLCJzdXJuYW1lIjpudWxsLCJpYXQiOjE1OTA4NTkwMjgsImV4cCI6MTE1OTA4NTkwMjgsImlzcyI6ImdvbGVtaW8iLCJqdGkiOiJhNTI0ZWI5Yi04ZmI5LTQzZWMtYWQwNC1lZDcxOGI3ZmRhYWYifQ.NMm5_7uI1IGmdI96cRux7GUraa8OMUlNCyZv2jAuM54';
 var styles = {
 'Polygon': new Style({
     stroke: new Stroke({
-        color: 'red',
+        color: 'rgb(255, 20, 147, 0.8)',
         width: 1
     }),
     fill: new Fill({
-        color: 'rgba(255, 0, 0, 0.2)'
+        color: 'rgba(255, 20, 147, 0.2)'
     })
 }),
 'Circle': new Style({
@@ -31,7 +33,7 @@ var styles = {
         width: 2
     }),
     fill: new Fill({
-        color: 'rgba(255,0,0,0.2)'
+        color: 'rgba(255, 0, 0, 0.2)'
     })
 })};
 
@@ -49,7 +51,7 @@ var metroColors = {
     'A': ['green', 'rgba(0, 255, 0, 0.2)'],
     'B': ['yellow', 'rgba(255, 255, 0, 0.2)'],
     'C': ['red', 'rgba(255, 0, 0, 0.2)'],
-    'multi': ['blue', 'rgba(0, 0, 255, 0.2)']
+    'multi': ['aqua', 'rgba(0, 255, 255, 0.2)']
 };
 
 document.getElementById('radonToggleButton').addEventListener('click', function(e) {
@@ -97,6 +99,7 @@ function noiseDownloadEventHandler(e) {
     document.getElementById(e.target.id + 'loader').style.display = 'inline-block';
     e.target.disabled = true;
     e.target.innerHTML = 'Downloading data...';
+    e.target.title = '';
     document.getElementById('noiseSlider').value = slideSetter[e.target.id] * 20;
     document.getElementById('noiseSlider').disabled = true;
     var event = document.createEvent('Event');
@@ -166,7 +169,7 @@ var chmuVectorLayer = new olLayer.Vector({
 });
 
 var metroVectorSource = new olSource.Vector({
-    url: 'http://192.168.0.116:8080/metrosFiltered.json',
+    url: 'http://' + host + ':' + port + '/metrosFiltered.json',
     format: new GeoJSON()
 });
 
@@ -176,7 +179,7 @@ var metroVectorLayer = new olLayer.Vector({
 });		
 
 var radonVectorSource = new olSource.Vector({
-    url: 'http://192.168.0.116:8080/GEO_RN_IndexPlochy_p.json',
+    url: 'http://' + host + ':' + port + '/GEO_RN_IndexPlochy_p.json',
     format: new GeoJSON()
 });	
 
@@ -195,8 +198,8 @@ var overlay = new ol.Overlay({
 var map = new ol.Map({
     layers: [
         new olLayer.Tile({
-            source: new olSource.OSM({
-                "url" : "http://{a-c}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png"
+            source: new olSource.XYZ( {
+                url: 'https://api.mapbox.com/styles/v1/michalovj/ckawyq8og04ge1illu36zt5l8/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoibWljaGFsb3ZqIiwiYSI6ImNrYXNlczJ4cjA2a3YyeXB0b3J0NzZmMTcifQ.aI-5pcZa6maYFqGQ1n8y7w'
             })
         }),
         radonVectorLayer,
@@ -303,9 +306,8 @@ function chmuLoader(extent, resolution, projection) {
 }
 
 function getNthLayer(layer, button) {
-    console.log(layer);
     var vectorSource = new olSource.Vector({
-        url: 'http://192.168.0.116:8080/' + layer + '_MIN.json',
+        url: 'http://' + host + ':' + port + '/' + layer + '_MIN.json',
         format: new GeoJSON()
     });
     
