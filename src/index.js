@@ -35,6 +35,16 @@ var styles = {
     })
 })};
 
+var noiseStyle = new Style({
+    stroke: new Stroke({
+        color: 'red',
+        width: 1
+    }),
+    fill: new Fill({
+        color: 'rgba(255, 0, 0, 0.2)'
+    })
+});
+
 var metroColors = {
     'A': ['green', 'rgba(0, 255, 0, 0.2)'],
     'B': ['yellow', 'rgba(255, 255, 0, 0.2)'],
@@ -42,57 +52,106 @@ var metroColors = {
     'multi': ['blue', 'rgba(0, 0, 255, 0.2)']
 };
 
-document.getElementById('rnIndexRange').addEventListener('input', function() {
+document.getElementById('radonToggleButton').addEventListener('click', function(e) {
+    toggleVisibilityClass(e.target);
+    radonVectorLayer.setVisible(!radonVectorLayer.getVisible());
+});
+
+document.getElementById('metroToggleButton').addEventListener('click', function(e) {
+    toggleVisibilityClass(e.target);
+    metroVectorLayer.setVisible(!metroVectorLayer.getVisible());
+});
+
+document.getElementById('chmiToggleButton').addEventListener('click', function(e) {
+    toggleVisibilityClass(e.target);
+    chmuVectorLayer.setVisible(!chmuVectorLayer.getVisible());
+});
+
+document.getElementById('rnIndexRange').addEventListener('input', function(e) {
+    document.getElementById('radonIndexText').innerHTML = e.target.value;
     radonVectorLayer.getSource().changed();
 });
 
-document.getElementById('metroRange').addEventListener('input', function() {
+document.getElementById('metroRange').addEventListener('input', function(e) {
+    document.getElementById('metroRadiusText').innerHTML = e.target.value;
     metroVectorLayer.getSource().changed();
 });
 
-document.getElementById('radonCheckbox').addEventListener('change', function() {
-    radonVectorLayer.getSource().changed();
+document.querySelectorAll('.downloadButton').forEach(function (button) {
+    button.addEventListener('click', noiseDownloadEventHandler);
 });
 
-document.getElementById('metroCheckbox').addEventListener('change', function() {
-    metroVectorLayer.getSource().changed();
+document.getElementById('noiseSlider').addEventListener('input', function(e) {
+    var val = e.target.value;
+    e.target.title = 'Showing range of ' + e.target.value + '-' + Math.min((Number(e.target.value) + 9), 85) + ' db';
 });
 
-document.getElementById('chmiCheckbox').addEventListener('change', function() {
-    chmuVectorLayer.getSource().changed();
-});
+var slideSetter = {
+    'FIRST': 0,
+    'SECOND': 1,
+    'THIRD': 2,
+    'FOURTH': 3
+}
+
+function noiseDownloadEventHandler(e) {
+    document.getElementById(e.target.id + 'loader').style.display = 'inline-block';
+    e.target.disabled = true;
+    e.target.innerHTML = 'Downloading data...';
+    document.getElementById('noiseSlider').value = slideSetter[e.target.id] * 20;
+    document.getElementById('noiseSlider').disabled = true;
+    var event = document.createEvent('Event');
+    event.initEvent('input', true, true);
+    document.getElementById('noiseSlider').dispatchEvent(event);
+    getNthLayer(e.target.id, e.target);
+}
+
+function toggleVisibilityClass(button) {
+    button.classList.toggle('hide');
+    button.classList.toggle('show');
+}
+
+document.getElementById('metroRadiusText').innerHTML = document.getElementById('metroRange').value;
+document.getElementById('radonIndexText').innerHTML = document.getElementById('rnIndexRange').value;
 
 var radonStyleFunction = function(feature) {
-    if (document.getElementById('radonCheckbox').checked && feature.get('RN_INDEX') >= Number(document.getElementById('rnIndexRange').value)) {
+    if (feature.get('RN_INDEX') >= Number(document.getElementById('rnIndexRange').value)) {
         return styles[feature.getGeometry().getType()];
     }
 };
 
 var metroStyleFunction = function(feature, resolution) {
-    if (document.getElementById('metroCheckbox').checked) {
-        var line = feature.get('VST_LINKA');
-        var stationColor = line.length > 1 ? metroColors['multi'] : metroColors[line];
-        return new Style({
-            image: new Circle({
-                radius: Number(document.getElementById('metroRange').value) / resolution,
-                fill: new Fill({color: stationColor[1]}),
-                stroke: new Stroke({
-                    color: stationColor[0],
-                    width: 1
-                })
+    var line = feature.get('VST_LINKA');
+    var stationColor = line.length > 1 ? metroColors['multi'] : metroColors[line];
+    return new Style({
+        image: new Circle({
+            radius: Number(document.getElementById('metroRange').value) / resolution,
+            fill: new Fill({color: stationColor[1]}),
+            stroke: new Stroke({
+                color: stationColor[0],
+                width: 1
             })
         })
-    }
+    });
 };
 
 var chmuStyleFunction = function(feature, resolution) {
-    if (document.getElementById('chmiCheckbox').checked) {
-        var aqIndex = Number(feature.get('measurement').AQ_hourly_index);
-        return new Style({
-            image: new Icon({
-                src: 'https://api.iconify.design/oi:cloud.svg?color=' + getColor(aqIndex / 7) + '&height=15'
-            })
-        });
+    var aqIndex = Number(feature.get('measurement').AQ_hourly_index);
+    return new Style({
+        image: new Icon({
+            src: 'https://api.iconify.design/oi:cloud.svg?color=' + getColor(aqIndex / 7) + '&height=15'
+        })
+    });
+};
+
+var noiseStyleFunction = function(feature, resolution) {
+    var sliderVal = Number(document.getElementById('noiseSlider').value);
+    var featureLoVal = Number(feature.get('DB_LO'));
+    var featureHiVal = Number(feature.get('DB_HI'));
+    if (featureLoVal >= sliderVal && featureHiVal < sliderVal + 10) {
+        noiseStyle.setGeometry(feature.getGeometry().simplify(2.8 * resolution));
+        noiseStyle.getFill().setColor(getColor(feature.get('DB_LO') / 85, 0.1));
+        noiseStyle.getStroke().setColor(getColor(feature.get('DB_LO') / 85, 0.2));
+        return noiseStyle;
     }
 };
 
@@ -142,7 +201,7 @@ var map = new ol.Map({
         }),
         radonVectorLayer,
         metroVectorLayer,
-        chmuVectorLayer
+        chmuVectorLayer        
     ],
     target: 'map',
     overlays: [overlay],
@@ -197,7 +256,7 @@ function showInfo(coordinate) {
         overlay.setPosition(undefined);
         return;
     }
-    content.innerHTML = '<span class="kek">' + text + '</span>';
+    content.innerHTML = '<span class="popup-text">' + text + '</span>';
     overlay.setPosition(coordinate);
 }
 
@@ -243,9 +302,45 @@ function chmuLoader(extent, resolution, projection) {
     xhr.send();
 }
 
-function getColor(value) {
+function getNthLayer(layer, button) {
+    console.log(layer);
+    var vectorSource = new olSource.Vector({
+        url: 'http://192.168.0.116:8080/' + layer + '_MIN.json',
+        format: new GeoJSON()
+    });
+    
+    var vectorLayer = new olLayer.Vector({
+        source: vectorSource,
+        style: noiseStyleFunction
+    });
+    var layers = map.getLayers();
+    layers.insertAt(1, vectorLayer);
+
+    vectorLayer.once('change', function(e) { 
+        button.disabled = false;
+        button.innerHTML = '';
+        button.classList.remove('downloadButton');
+        button.classList.add('hide');
+
+        document.getElementById('noiseSlider').style.display = 'inline-block';
+        document.getElementById('noiseSlider').disabled = false;
+        document.getElementById(layer + 'loader').style.display = 'none';
+
+        document.getElementById('noiseSlider').addEventListener('input', function() {
+            e.target.getSource().changed();
+        });
+
+        button.removeEventListener('click', noiseDownloadEventHandler);
+        button.addEventListener('click', function(event) {
+            toggleVisibilityClass(event.target);
+            e.target.setVisible(!e.target.getVisible());            
+        });
+    });
+}
+
+function getColor(value, alpha = 1) {
     var hue = ((1 - value) * 120).toString(10);
-    return 'hsl(' + hue + ",100%,50%)";
+    return 'hsl(' + hue + ',100%,50%,' + alpha + ')';
 }
 
 function getAirQualityDescription(aqIndex) {

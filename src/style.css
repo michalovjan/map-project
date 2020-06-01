@@ -1,42 +1,150 @@
+html {
+    background-color: #dedede;
+}
+
+body {
+    margin: 0;
+}
+
 .map {
     height: 600px;
     width: 100%;
 }
 
-.ol-popup {
-position: absolute;
-background-color: black;
-color: white;
-box-shadow: 0 1px 4px rgba(0,0,0,0.2);
-border-radius: 10px;
-text-align: center;
-border: 1px solid #cccccc;
-margin: 10px;
-padding: 10px;
-white-space: nowrap;
+button {
+    border:1px solid #337fed;
+    background-color:#3498db;
 }
 
-.kek {
-margin: 10px;
+.ol-popup {
+    position: absolute;
+    background-color: black;
+    color: #dedede;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+    border-radius: 10px;
+    text-align: center;
+    border: 1px solid #cccccc;
+    margin: 10px;
+    padding: 10px;
+    white-space: nowrap;
+}
+
+.popup-text {
+    margin: 10px;
 }	  
 
 #loaderContainer {
-left: calc(100% - 55px);
-top: 5px;
+    left: calc(100% - 55px);
+    top: 5px;
 }
 
 .loader {
-position: absolute;
-border: 7px solid #f3f3f3; /* Light grey */
-border-top: 7px solid #3498db; /* Blue */
-border-radius: 50%;
-width: 30px;
-height: 30px;
-animation: spin 2s linear infinite;
-padding-left: 80%;
+    position: absolute;
+    border: 7px solid #f3f3f3;
+    border-top: 7px solid #3498db;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    animation: spin 2s linear infinite;
+    padding-left: 80%;
+}
+
+.loader.loader-small {
+    height: 12px;
+    width: 12px;
+    padding-left: 4px;
+    position: absolute;
+    display: none;
+    margin-top: 0.8em;
+    box-shadow: 4px 0 6px rgba(0,0,0,0.2), 0 4px 6px rgba(0,0,0,0.2);
 }
 
 @keyframes spin {
-0% { transform: rotate(0deg); }
-100% { transform: rotate(360deg); }
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+th, td {
+    text-align: center;
+    padding: 7px;
+}
+
+th {
+    background-color: #3498db;
+    color: #f3f3f3;
+    height: 1.5em;
+    font-size: 20px;
+}
+
+.settingsTable {
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+table tr td,
+table tr th {
+      padding: 5px;
+      border-right: 1px solid grey;
+    top: 10%;
+}
+
+table tr td:last-child,
+table tr td:first-child,
+table tr th:last-child,
+table tr th:first-child {
+      border-right: none;
+}
+
+.visibilityButton {
+	box-shadow: inset 0px 1px 0px 0px #97c4fe;
+	border-radius: 6px;	
+	display: inline-block;
+	cursor: pointer;
+	color: #f3f3f3;
+	font-size: 15px;
+	font-weight: bold;
+    padding: 6px 24px;
+    margin: 10px 7px;
+	text-decoration: none;
+	text-shadow: 0px 1px 0px #1570cd;
+}
+
+.visibilityButton:not([disabled]):hover {
+	background: linear-gradient(to bottom, #1e62d0 5%, #3498db 100%);
+	background-color: #3498db;
+}
+
+.visibilityButton:active {
+	position: relative;
+	top: 1px;
+}
+
+.visibilityButton:focus {
+    outline: none;
+}
+
+.hide::after {
+    content: 'Hide';
+}
+
+.show::after {
+    content: 'Show';
+}
+
+.visibilityButton:disabled,
+.visibilityButton:disabled:hover {
+    cursor: not-allowed;
+    background-color: grey;
+    color: #444444;
+    border-color: #333333;
+    text-shadow: none;
+    box-shadow: inset 0px 1px 0px 0px grey;
+}
+
+#noiseSlider {
+    display: none;
 }
