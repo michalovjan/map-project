@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "webpack",
-    "start": "webpack-dev-server --open"
+    "start": "node server.js"
   },
   "author": "Jan Michalov, Ivan Vanat",
   "license": "ISC",

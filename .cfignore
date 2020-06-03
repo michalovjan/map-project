@@ -1,0 +1,12 @@
+node_modules
+.tmp
+.sass-cache
+bower_components
+.build-tmp
+node
+rest-config.json
+proxy-profiles.json
+target
+.vscode
+*.code-workspace
+.env

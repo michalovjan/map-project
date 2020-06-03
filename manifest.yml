@@ -1,0 +1,6 @@
+applications:
+  - name: map-project
+    random-route: true
+    memory: 512M
+    buildpacks:
+      - nodejs_buildpack
