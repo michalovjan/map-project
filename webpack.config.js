@@ -8,6 +8,11 @@ module.exports = {
     devtool: 'inline-source-map',
     devServer:{
         contentBase: './dist',
+        headers: {
+            'Access-Control-Allow-Origin': '*', 
+            'Access-Control-Allow-Headers': '*',
+            'Access-Control-Allow-Methods': 'GET, POST, PUT, OPTIONS'
+    },
 	port: 80
     },
     plugins: [

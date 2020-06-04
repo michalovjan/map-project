@@ -13,6 +13,9 @@ import 'ol/ol.css';
 proj4.defs("EPSG:5514","+proj=krovak +lat_0=49.5 +lon_0=24.83333333333333 +alpha=30.28813972222222 +k=0.9999 +x_0=0 +y_0=0 +ellps=bessel +towgs84=589,76,480,0,0,0,0 +units=m +no_defs");
 register(proj4);
 
+var googleBaseUrl = 'https://drive.google.com/uc?export=download&id=';
+var radonUrl = googleBaseUrl + '1rQoJCaGoo-gslSEyjoNgB3V3wWYKtVNQ';
+var metroUrl = googleBaseUrl + '';
 var host = '192.168.0.45';
 var port = 8080;
 var notLoadedFeatures = 3;
@@ -89,10 +92,10 @@ document.getElementById('noiseSlider').addEventListener('input', function(e) {
 });
 
 var slideSetter = {
-    'FIRST': 0,
-    'SECOND': 1,
-    'THIRD': 2,
-    'FOURTH': 3
+    'FIRST': [0, '1MjJG_F0jOWU123eLBvlgJQ36nlqm2K01'],
+    'SECOND': [1, '132GQZ1j9k8RRdbWKsV41g9aMXGUObEmP'],
+    'THIRD': [2, '1Hx3XlvwgKM0n5GO6_mk413_-E0jvIgnR'],
+    'FOURTH': [3, '1IMhZv8BDYV16kaVVB7v3Vitp2oaYvfOI']
 }
 
 function noiseDownloadEventHandler(e) {
@@ -100,7 +103,7 @@ function noiseDownloadEventHandler(e) {
     e.target.disabled = true;
     e.target.innerHTML = 'Downloading data...';
     e.target.title = '';
-    document.getElementById('noiseSlider').value = slideSetter[e.target.id] * 20;
+    document.getElementById('noiseSlider').value = slideSetter[e.target.id][0] * 20;
     document.getElementById('noiseSlider').disabled = true;
     var event = document.createEvent('Event');
     event.initEvent('input', true, true);
@@ -169,7 +172,7 @@ var chmuVectorLayer = new olLayer.Vector({
 });
 
 var metroVectorSource = new olSource.Vector({
-    url: 'http://' + host + ':' + port + '/metrosFiltered.json',
+    loader: metroLoader,
     format: new GeoJSON()
 });
 
@@ -179,7 +182,8 @@ var metroVectorLayer = new olLayer.Vector({
 });		
 
 var radonVectorSource = new olSource.Vector({
-    url: 'http://' + host + ':' + port + '/GEO_RN_IndexPlochy_p.json',
+    //url: radonUrl,
+    loader: radonLoader,
     format: new GeoJSON()
 });	
 
@@ -305,9 +309,52 @@ function chmuLoader(extent, resolution, projection) {
     xhr.send();
 }
 
+function radonLoader(extent) {
+    customLoader(radonUrl, 
+        { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': '*', 'Allow' : 'GET, POST', 'content-type': 'application/json' }, 
+        radonSuccess, 
+        function() { radonVectorSource.removeLoadedExtent(extent); }
+    );
+}
+
+function metroLoader(extent) {
+    customLoader(metroUrl,
+         {}, 
+         metroSuccess, 
+         function(extent) { metroVectorSource.removeLoadedExtent(extent); }
+    );
+}
+
+function customLoader(url, headersDict, successCallback, errorCallback) {
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', url);
+    for (var header in headersDict){
+        xhr.setRequestHeader(header, headersDict[header]);
+    }
+    xhr.onerror = errorCallback;
+    xhr.onload = function() {
+        if (xhr.status == 200) {
+            successCallback(xhr.responseText);
+        } else {
+            onError();
+        }
+    };
+    xhr.send();
+}
+
+function radonSuccess(responseText) {
+    radonVectorSource.addFeatures(
+        radonVectorSource.getFormat().readFeatures(responseText));
+}
+
+function metroSuccess(responseText) {
+    metroVectorSource.addFeatures(
+        metroVectorSource.getFormat().readFeatures(responseText)); 
+}
+
 function getNthLayer(layer, button) {
     var vectorSource = new olSource.Vector({
-        url: 'http://' + host + ':' + port + '/' + layer + '_MIN.json',
+        url: googleBaseUrl + slideSetter[layer][1],
         format: new GeoJSON()
     });
     
