@@ -13,12 +13,10 @@ import 'ol/ol.css';
 proj4.defs("EPSG:5514","+proj=krovak +lat_0=49.5 +lon_0=24.83333333333333 +alpha=30.28813972222222 +k=0.9999 +x_0=0 +y_0=0 +ellps=bessel +towgs84=589,76,480,0,0,0,0 +units=m +no_defs");
 register(proj4);
 
-var corsProxyUrl = 'http://localhost:8080/?url='
+var corsProxyUrl = 'http://localhost:8080/?url=';
 var googleBaseUrl = corsProxyUrl + 'https://drive.google.com/uc?export=download&id=';
 var radonUrl = googleBaseUrl + '1rQoJCaGoo-gslSEyjoNgB3V3wWYKtVNQ';
-var metroUrl = googleBaseUrl + '';
-var host = '192.168.0.45';
-var port = 8080;
+var metroUrl = googleBaseUrl + '1SAwdfYzjac0UIMGjSsky4hHXQ-9r47Rd';
 var notLoadedFeatures = 3;
 var golemioApiKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Iml2YW52YW5hdEBnbWFpbC5jb20iLCJpZCI6MjkyLCJuYW1lIjpudWxsLCJzdXJuYW1lIjpudWxsLCJpYXQiOjE1OTA4NTkwMjgsImV4cCI6MTE1OTA4NTkwMjgsImlzcyI6ImdvbGVtaW8iLCJqdGkiOiJhNTI0ZWI5Yi04ZmI5LTQzZWMtYWQwNC1lZDcxOGI3ZmRhYWYifQ.NMm5_7uI1IGmdI96cRux7GUraa8OMUlNCyZv2jAuM54';
 var styles = {
@@ -173,7 +171,7 @@ var chmuVectorLayer = new olLayer.Vector({
 });
 
 var metroVectorSource = new olSource.Vector({
-    loader: metroLoader,
+    url: metroUrl,
     format: new GeoJSON()
 });
 
@@ -184,10 +182,7 @@ var metroVectorLayer = new olLayer.Vector({
 
 var radonVectorSource = new olSource.Vector({
     url: radonUrl,
-    crossOrigin: 'anonymous',
-    // loader: radonLoader,
     format: new GeoJSON()
-
 });	
 
 var radonVectorLayer = new olLayer.Vector({
@@ -216,7 +211,7 @@ var map = new ol.Map({
     target: 'map',
     overlays: [overlay],
     view: new ol.View({
-        center: fromLonLat([14.4229888, 50.0923933]),
+        center: fromLonLat([14.5229888, 50.0623933]),
         zoom: 11
     })
 });		
@@ -287,7 +282,6 @@ function getTooltipText(feature) {
 }
 
 function chmuLoader(extent, resolution, projection) {
-    var proj = projection.getCode();
     var url = 'https://api.golemio.cz/v2/airqualitystations/?latlng=50.124935%2C14.457204&range=15000';
     var xhr = new XMLHttpRequest();
     xhr.open('GET', url);
@@ -310,49 +304,6 @@ function chmuLoader(extent, resolution, projection) {
         }
     };
     xhr.send();
-}
-
-function radonLoader(extent) {
-    customLoader(radonUrl, 
-        { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': '*', 'Access-Control-Allow-Methods' : 'GET, POST'}, 
-        radonSuccess, 
-        function() { radonVectorSource.removeLoadedExtent(extent); }
-    );
-}
-
-function metroLoader(extent) {
-    customLoader(metroUrl,
-         {}, 
-         metroSuccess, 
-         function(extent) { metroVectorSource.removeLoadedExtent(extent); }
-    );
-}
-
-function customLoader(url, headersDict, successCallback, errorCallback) {
-    var xhr = new XMLHttpRequest();
-    xhr.open('GET', url);
-    for (var header in headersDict){
-        xhr.setRequestHeader(header, headersDict[header]);
-    }
-    xhr.onerror = errorCallback;
-    xhr.onload = function() {
-        if (xhr.status == 200) {
-            successCallback(xhr.responseText);
-        } else {
-            onError();
-        }
-    };
-    xhr.send();
-}
-
-function radonSuccess(responseText) {
-    radonVectorSource.addFeatures(
-        radonVectorSource.getFormat().readFeatures(responseText));
-}
-
-function metroSuccess(responseText) {
-    metroVectorSource.addFeatures(
-        metroVectorSource.getFormat().readFeatures(responseText)); 
 }
 
 function getNthLayer(layer, button) {
