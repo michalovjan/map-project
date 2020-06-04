@@ -13,7 +13,7 @@ module.exports = {
             'Access-Control-Allow-Headers': '*',
             'Access-Control-Allow-Methods': 'GET, POST, PUT, OPTIONS'
     },
-	port: 80
+	    port: 3000
     },
     plugins: [
         new CleanWebpackPlugin(),

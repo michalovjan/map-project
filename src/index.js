@@ -13,7 +13,8 @@ import 'ol/ol.css';
 proj4.defs("EPSG:5514","+proj=krovak +lat_0=49.5 +lon_0=24.83333333333333 +alpha=30.28813972222222 +k=0.9999 +x_0=0 +y_0=0 +ellps=bessel +towgs84=589,76,480,0,0,0,0 +units=m +no_defs");
 register(proj4);
 
-var googleBaseUrl = 'https://drive.google.com/uc?export=download&id=';
+var corsProxyUrl = 'http://localhost:8080/?url='
+var googleBaseUrl = corsProxyUrl + 'https://drive.google.com/uc?export=download&id=';
 var radonUrl = googleBaseUrl + '1rQoJCaGoo-gslSEyjoNgB3V3wWYKtVNQ';
 var metroUrl = googleBaseUrl + '';
 var host = '192.168.0.45';
@@ -182,9 +183,11 @@ var metroVectorLayer = new olLayer.Vector({
 });		
 
 var radonVectorSource = new olSource.Vector({
-    //url: radonUrl,
-    loader: radonLoader,
+    url: radonUrl,
+    crossOrigin: 'anonymous',
+    // loader: radonLoader,
     format: new GeoJSON()
+
 });	
 
 var radonVectorLayer = new olLayer.Vector({
@@ -311,7 +314,7 @@ function chmuLoader(extent, resolution, projection) {
 
 function radonLoader(extent) {
     customLoader(radonUrl, 
-        { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': '*', 'Allow' : 'GET, POST', 'content-type': 'application/json' }, 
+        { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': '*', 'Access-Control-Allow-Methods' : 'GET, POST'}, 
         radonSuccess, 
         function() { radonVectorSource.removeLoadedExtent(extent); }
     );
